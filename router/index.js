@@ -1,4 +1,4 @@
-const Koa = require('koa2');
+const Koa = require('koa');
 const fs = require('fs');
 const app = new Koa();
 const path = require('path');

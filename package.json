@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "koa": "^2.4.1",
     "koa-cors": "0.0.16",
     "koa-router": "^7.3.0",
     "koa-static": "^4.0.2",
-    "koa2": "^2.0.0-alpha.7",
     "mongodb": "^2.2.33"
   }
 }
