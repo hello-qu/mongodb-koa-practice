@@ -16,5 +16,7 @@
     "koa-router": "^7.3.0",
     "koa-static": "^4.0.2",
     "mongodb": "^2.2.33"
+  },
+  "devDependencies": {
   }
 }

@@ -3,6 +3,7 @@ const MongoClient = require('mongodb').MongoClient;
 const url = require('../config/default').url;
 
 
+//查询数据
 let queryInfo = async (ctx,next) => {
     let searchObj = ctx.query;
     searchObj.likes = searchObj.likes ? Number(searchObj.likes) : undefined;
@@ -15,9 +16,10 @@ let queryInfo = async (ctx,next) => {
     }
  }
 
-
+//删除数据
 let remove = async (ctx) => {
     let postdata = "";
+    // 是否必须通过监听data的方式 能不能同步获取？
     ctx.req.addListener('data', async (data) => {
         postdata += data
     })
@@ -32,6 +34,28 @@ let remove = async (ctx) => {
         }
     })
 }
+
+//修改数据
+let uodateData = async (ctx) =>{
+    let postdata = "";
+    ctx.req.addListener('data', async (data) => {
+        postdata += data
+    })
+    ctx.req.addListener("end", async () => {
+        postdata = JSON.parse(postdata)
+        try {
+            let connResult = await MongoClient.connect(url);
+            let postResult = await connResult.collection('col').updateOne(whereStr,postdata);
+        } catch (e) {
+            console.log(e)
+            return e;
+        }
+    })
+}
+
+//新增数据
+
+
 /*
 * resolve 中传入db貌似会有问题，无法被controll
 * 接收到到一直报undefined  上下文丢失
