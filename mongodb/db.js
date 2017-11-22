@@ -6,11 +6,14 @@ const url = require('../config/default').url;
 //查询数据
 let queryInfo = async (ctx,next) => {
     let searchObj = ctx.query;
-    searchObj.likes = searchObj.likes ? Number(searchObj.likes) : undefined;
+    if( searchObj.likes){
+        searchObj.likes = Number(searchObj.likes)
+    }
     try {
         let connResult = await MongoClient.connect(url);
         let dataResult = await connResult.collection('col').find(searchObj).toArray();
         return dataResult;
+        
     } catch (e) {
        return e;
     }
