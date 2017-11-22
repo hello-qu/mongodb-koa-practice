@@ -20,6 +20,8 @@ port.get('/getInfo',controller.getInfo)
 //删除接口
 port.post('/delete',controller.deleteInfo)
 
+//修改接口
+port.post('/updateData',controller.update)
 let router = new Router()
 router.use('/home', port.routes(), port.allowedMethods())
 app.use(router.routes()).use(router.allowedMethods())

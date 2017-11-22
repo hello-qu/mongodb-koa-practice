@@ -88,15 +88,18 @@
     }
 
     span.delete{
-        background: rgb(212, 163, 158);
+        background-color: rgb(212, 163, 158);
     }
 
     span.update{
-        background: rgb(17, 152, 206);
+        background-color: rgb(17, 152, 206);
     }
 
+    span.save{
+        background-color: rgb(255, 121, 7);
+    }
+    
     .handle span{
-
         margin-right: 5px;
         padding: 2px;
     }
@@ -154,7 +157,8 @@
                     <input type="text" v-show="currentId === item._id" v-model="likes">
                 </div>
                 <div class="cell handle">
-                    <span class="update" @click="update(item._id,index)">{{currentId === item._id?'保存':'更新'}}</span>
+                    <span class="save" v-if="(currentId === item._id)&& !isEdit" @click="save()">保存</span>
+                    <span class="update"  v-else @click="update(item._id,index)">更新</span>    
                     <span class="delete" @click="remove(item._id,index)">删除</span>
                 </div>
             </div>
@@ -175,21 +179,25 @@
                     url:'',
                     by:'',
                     likes:'',
-                    isUpdate:false,
+                    isEdit:true,
                     statusText:"更新"
                 }
             },
             created:function(){
-                fetch('http://localhost:3111/home/getInfo').then((res)=>{
-                    this.courseList = res;
-                },(err)=>{
-                    console.log(err)
-                })
+                this.initLoad();
             },
             methods:{
+                initLoad(){
+                    fetch('http://localhost:3111/home/getInfo').then((res)=>{
+                        this.courseList = res;
+                    },(err)=>{
+                        console.log(err)
+                    })
+                },
+
+
                 update(id,index){
-                   this.isUpdate = true;
-                   console.log(this.courseList[index]);
+                   this.isEdit = false;
                    let currentData = this.courseList[index]
                    this.currentId = currentData._id;
                    this.title = currentData.title;
@@ -197,10 +205,25 @@
                    this.url = currentData.url;
                    this.by  = currentData.by;
                    this.likes = currentData.likes;
-                   fetch('http://localhost:3111/home/getInfo').then((res)=>{
+                },
 
+                save(){
+                    
+                    var data = {
+                       _id: this.currentId,
+                       title: this.title,
+                        description:this.description,
+                        url:this.url,
+                        likes:Number(this.likes),
+                        by:this.by
+                   }
+                    fetch('http://localhost:3111/home/updateData',data,'POST').then((res)=>{
+                        if(res.code === 000){
+                            this.initLoad();
+                            this.isEdit = true;
+                            this.currentId = '';
+                        }
                    })
-
                 },
                 remove(id){
 

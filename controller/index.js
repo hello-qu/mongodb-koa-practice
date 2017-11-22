@@ -7,3 +7,7 @@ module.exports.getInfo = async (ctx) => {
 module.exports.deleteInfo = async(ctx) => {
     ctx.body = await db.remove(ctx)
 }
+
+module.exports.update = async(ctx) => {
+    ctx.body = await db.updateData(ctx);
+}

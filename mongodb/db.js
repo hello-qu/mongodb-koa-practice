@@ -1,7 +1,7 @@
 // 数据库连接
 const MongoClient = require('mongodb').MongoClient;
 const url = require('../config/default').url;
-
+const ObjectID = require('mongodb').ObjectID;
 
 //查询数据
 let queryInfo = async (ctx,next) => {
@@ -39,20 +39,31 @@ let remove = async (ctx) => {
 }
 
 //修改数据
-let uodateData = async (ctx) =>{
-    let postdata = "";
-    ctx.req.addListener('data', async (data) => {
-        postdata += data
-    })
-    ctx.req.addListener("end", async () => {
-        postdata = JSON.parse(postdata)
-        try {
-            let connResult = await MongoClient.connect(url);
-            let postResult = await connResult.collection('col').updateOne(whereStr,postdata);
-        } catch (e) {
-            console.log(e)
-            return e;
-        }
+let updateData = async (ctx) =>{
+    return new Promise((res,rej)=>{
+        let postdata = "";
+        ctx.req.addListener('data', async (data) => {
+            postdata += data
+        })
+        ctx.req.addListener("end", async () => {
+            postdata = JSON.parse(postdata)
+            try {
+                let connResult = await MongoClient.connect(url);
+                postdata._id = new ObjectID(postdata._id);
+                let postResult = await connResult.collection('col').updateOne({_id:postdata._id},{$set:postdata});
+                if(postResult.result.ok === 1 && postResult.result.nModified!== 0){
+                    res({
+                        success:true,
+                        code:000,
+                        message:"修改成功"
+                    })
+                }
+            } catch (e) {
+                console.log(e)
+                return e;
+            }
+        })
+    console.log("postdata",postdata)
     })
 }
 
@@ -65,5 +76,6 @@ let uodateData = async (ctx) =>{
 */
 module.exports = {
     queryInfo,
-    remove
+    remove,
+    updateData
 }
