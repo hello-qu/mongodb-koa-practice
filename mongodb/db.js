@@ -21,20 +21,36 @@ let queryInfo = async (ctx,next) => {
 
 //删除数据
 let remove = async (ctx) => {
-    let postdata = "";
-    // 是否必须通过监听data的方式 能不能同步获取？
-    ctx.req.addListener('data', async (data) => {
-        postdata += data
-    })
-    ctx.req.addListener("end", async () => {
-        postdata = JSON.parse(postdata)
-        try {
-            let connResult = await MongoClient.connect(url);
-            let postResult = await connResult.collection('col').deleteOne(postdata);
-        } catch (e) {
-            console.log(e)
-            return e;
-        }
+    return new Promise((res,rej)=>{
+        let postdata = "";
+        // 是否必须通过监听data的方式 能不能同步获取？
+        ctx.req.addListener('data', async (data) => {
+            postdata += data;
+        })
+        ctx.req.addListener("end", async () => {
+            postdata = JSON.parse(postdata)
+            postdata._id = new ObjectID(postdata._id);
+            try {
+                let connResult = await MongoClient.connect(url);
+                let postResult = await connResult.collection('col').deleteOne(postdata);
+                if(postResult.result.ok === 1 && postResult.result.n !== 0){
+                    res({
+                        success:true,
+                        code:"000",
+                        message:"删除成功"
+                    })
+                }else if(postResult.result.ok === 1 && postResult.result.n === 0){
+                    res({
+                        success:true,
+                        code:"001",
+                        message:"数据不存在，删除失败"
+                    })
+                }
+            } catch (e) {
+                console.log(e)
+                return e;
+            }
+        })
     })
 }
 
@@ -54,8 +70,14 @@ let updateData = async (ctx) =>{
                 if(postResult.result.ok === 1 && postResult.result.nModified!== 0){
                     res({
                         success:true,
-                        code:000,
+                        code:"000",
                         message:"修改成功"
+                    })
+                }else if(postResult.result.ok === 1 && postResult.result.nModified== 0){
+                    res({
+                        success:true,
+                        code:"001",
+                        message:"数据不存在，修改失败"
                     })
                 }
             } catch (e) {

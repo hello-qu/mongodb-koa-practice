@@ -105,12 +105,17 @@
     }
 
     input[type="text"] {
-    width: 100%;
-}
+        width: 100%;
+    }
+
+    [v-cloak] {
+        display: none;
+    }
+
 </style>
 
 <body>
-    <div class="wrapper" id="app">
+    <div class="wrapper" id="app" v-cloak>
 
         <div class="table" >
 
@@ -179,8 +184,7 @@
                     url:'',
                     by:'',
                     likes:'',
-                    isEdit:true,
-                    statusText:"更新"
+                    isEdit:true
                 }
             },
             created:function(){
@@ -199,26 +203,26 @@
                 update(id,index){
                    this.isEdit = false;
                    let currentData = this.courseList[index]
-                   this.currentId = currentData._id;
-                   this.title = currentData.title;
-                   this.description = currentData.description;
-                   this.url = currentData.url;
-                   this.by  = currentData.by;
-                   this.likes = currentData.likes;
+                   Object.assign(this.$data,currentData)
+                //    this.currentId = currentData._id;
+                //    this.title = currentData.title;
+                //    this.description = currentData.description;
+                //    this.url = currentData.url;
+                //    this.by  = currentData.by;
+                //    this.likes = currentData.likes;
                 },
 
                 save(){
-                    
-                    var data = {
-                       _id: this.currentId,
-                       title: this.title,
+                    let data = {
+                        _id: this.currentId,
+                        title: this.title,
                         description:this.description,
                         url:this.url,
                         likes:Number(this.likes),
                         by:this.by
                    }
                     fetch('http://localhost:3111/home/updateData',data,'POST').then((res)=>{
-                        if(res.code === 000){
+                        if(res.code === "000"){
                             this.initLoad();
                             this.isEdit = true;
                             this.currentId = '';
@@ -226,7 +230,16 @@
                    })
                 },
                 remove(id){
-
+                    let data = {
+                        _id:id
+                    }
+                    fetch('http://localhost:3111/home/delete',data,'POST').then((res)=>{
+                        if(res.code === "000"){
+                            this.initLoad();
+                            this.isEdit = true;
+                            this.currentId = '';
+                        }
+                   })
                 }
             }
         })
