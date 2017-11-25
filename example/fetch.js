@@ -6,6 +6,8 @@
  */
 
 let fetch = (url = '', data = {}, type = 'GET', method = 'fetch') => {
+    let base = 'http://localhost:3111'
+    url = base+url;
     type = type.toUpperCase();
     if (type == 'GET') {
         let dataStr = ''; //数据拼接字符串

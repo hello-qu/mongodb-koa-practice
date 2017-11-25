@@ -90,7 +90,38 @@ let updateData = async (ctx) =>{
 }
 
 //新增数据
-
+let addData = async (ctx)=>{
+    return new Promise((res,rej)=>{
+        let postdata = "";
+        // 是否必须通过监听data的方式 能不能同步获取？
+        ctx.req.addListener('data', async (data) => {
+            postdata += data;
+        })
+        ctx.req.addListener("end", async () => {
+            postdata = JSON.parse(postdata)
+            try {
+                let connResult = await MongoClient.connect(url);
+                let postResult = await connResult.collection('col').insertOne(postdata);
+                if(postResult.result.ok === 1 && postResult.result.n !== 0){
+                    res({
+                        success:true,
+                        code:"000",
+                        message:"添加成功"
+                    })
+                }else if(postResult.result.ok === 1 && postResult.result.n === 0){
+                    res({
+                        success:true,
+                        code:"001",
+                        message:"添加失败"
+                    })
+                }
+            } catch (e) {
+                console.log(e)
+                return e;
+            }
+        })
+    })
+}
 
 /*
 * resolve 中传入db貌似会有问题，无法被controll
@@ -99,5 +130,6 @@ let updateData = async (ctx) =>{
 module.exports = {
     queryInfo,
     remove,
-    updateData
+    updateData,
+    addData
 }
