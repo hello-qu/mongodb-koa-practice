@@ -32,3 +32,5 @@ app.use(router.routes()).use(router.allowedMethods())
 app.listen(3111, (ctx) => {
   console.log("启用3111端口成功")
 })
+
+module.exports = router

@@ -85,7 +85,6 @@ let updateData = async (ctx) =>{
                 return e;
             }
         })
-    console.log("postdata",postdata)
     })
 }
 
@@ -111,7 +110,7 @@ let addData = async (ctx)=>{
                 }else if(postResult.result.ok === 1 && postResult.result.n === 0){
                     res({
                         success:true,
-                        code:"001",
+                        code:"009",
                         message:"添加失败"
                     })
                 }
